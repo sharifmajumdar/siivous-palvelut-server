@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 //Verify firebase token
-var serviceAccount = require("./configs/react-node-eshop-firebase-adminsdk-5kpai-29c0eb454e.json");
+var serviceAccount = require("./configs/se-palvelut-firebase-adminsdk-rkbgd-b52356937a.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -29,15 +29,14 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run(){
     try{
-        const productCOllection = client.db('eShop').collection('products');
-        //const historyCOllection = client.db('eShop').collection('history');
-        const orderHistoryCOllection = client.db('eShop').collection('orderHistory');
+        const serviceCollection = client.db('cleaningServices').collection('services');
+        const orderHistoryCOllection = client.db('cleaningServices').collection('orderHistory');
         
-        app.get('/showProducts', async(req, res) => {
+        app.get('/showServices', async(req, res) => {
             const query = {};
-            const cursor = productCOllection.find(query);
-            const products = await cursor.toArray();
-            res.send(products);
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
         });
 
         app.get('/showHistory', async(req, res) => {
@@ -65,15 +64,15 @@ async function run(){
             }
         });
 
-        app.post('/addProducts', async(req, res) => {
-            const product = req.body;
-            const result = await productCOllection.insertOne(product);
+        app.post('/addServices', async(req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
             res.send(result);
         });
 
         app.post('/addHistory', async(req, res) => {
             const history = req.body;
-            const result = await historyCOllection.insertOne(history);
+            const result = await orderHistoryCOllection.insertOne(history);
             res.send(result);
         });
 
@@ -83,10 +82,10 @@ async function run(){
             res.send(result);
         });
         
-        app.delete('/showProducts/:id', async(req, res) => {
+        app.delete('/showServices/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
-            const result = await productCOllection.deleteOne(query);
+            const result = await serviceCollection.deleteOne(query);
             res.send(result);
             //console.log('Trying to delete an item: ', id);
         });
